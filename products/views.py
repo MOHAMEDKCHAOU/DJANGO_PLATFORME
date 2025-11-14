@@ -1,4 +1,5 @@
-from django.shortcuts import render, redirect, get_object_or_404,Sum, F
+from django.shortcuts import render, redirect, get_object_or_404
+from django.db.models import Sum, F
 from .models import Product,StockMovement
 from .forms import ProductForm
 from django.shortcuts import render
