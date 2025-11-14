@@ -8,5 +8,11 @@ urlpatterns = [
     path('delete/<int:pk>/', views.product_delete, name='product_delete'),
     path('<int:pk>/', views.product_detail, name='product_detail'),  # page détail
     path('dashboard/', views.dashboard, name='dashboard'),
+    
+    path('categories/', views.category_list, name='category_list'),
+    path('categories/add/', views.category_add, name='category_add'),
+    path('categories/edit/<int:pk>/', views.category_edit, name='category_edit'),
+    path('categories/delete/<int:pk>/', views.category_delete, name='category_delete'),
+
 
 ]
