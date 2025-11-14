@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Sum, F
-from .models import Product,StockMovement
-from .forms import ProductForm
+from .models import Product,StockMovement, Category
+from .forms import ProductForm, CategoryForm
 from django.shortcuts import render
 from django.core.mail import send_mail
 from django.utils.timezone import now
@@ -44,6 +44,44 @@ def product_delete(request, pk):
     product.delete()
     return redirect('product_list')
 
+def product_detail(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    return render(request, 'products/product_detail.html', {'product': product})
+
+def category_list(request):
+    categories = Category.objects.all()
+    return render(request, 'products/category_list.html', {'categories': categories})
+
+# Ajouter catégorie
+def category_add(request):
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('category_list')
+    else:
+        form = CategoryForm()
+    return render(request, 'products/category_form.html', {'form': form})
+
+# Modifier catégorie
+def category_edit(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+    if request.method == 'POST':
+        form = CategoryForm(request.POST, instance=category)
+        if form.is_valid():
+            form.save()
+            return redirect('category_list')
+    else:
+        form = CategoryForm(instance=category)
+    return render(request, 'products/category_form.html', {'form': form})
+
+# Supprimer catégorie
+def category_delete(request, pk):
+    category = get_object_or_404(Category, pk=pk)
+    if request.method == 'POST':
+        category.delete()
+        return redirect('category_list')
+    return render(request, 'products/category_confirm_delete.html', {'category': category})
 
 LOW_STOCK_THRESHOLD = 5
 ADMIN_EMAIL = 'admin@exemple.com'

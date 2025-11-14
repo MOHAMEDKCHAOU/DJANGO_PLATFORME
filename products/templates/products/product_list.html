@@ -1,42 +1,44 @@
 {% extends "base.html" %}
-{% block title %}Produits{% endblock %}
+{% block title %}Liste des Produits{% endblock %}
 
 {% block content %}
-
-<div class="d-flex justify-content-between mb-3">
-    <h2>Liste des produits</h2>
-    <a href="{% url 'product_add' %}" class="btn btn-primary">+ Ajouter un produit</a>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Produits disponibles</h2>
+    <a href="{% url 'product_add' %}" class="btn btn-success">➕ Ajouter un produit</a>
 </div>
 
-<table class="table table-bordered table-striped">
-    <thead class="table-dark">
-        <tr>
-            <th>Nom</th>
-            <th>Catégorie</th>
-            <th>Prix</th>
-            <th>Quantité</th>
-            <th width="180px">Actions</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        {% for p in products %}
-        <tr>
-            <td>{{ p.name }}</td>
-            <td>{{ p.category }}</td>
-            <td>{{ p.price }} DT</td>
-            <td>{{ p.quantity }}</td>
-            <td>
-                <a href="{% url 'product_edit' p.pk %}" class="btn btn-warning btn-sm">Modifier</a>
-                <a href="{% url 'product_delete' p.pk %}" class="btn btn-danger btn-sm">Supprimer</a>
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="5" class="text-center">Aucun produit trouvé</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
+<div class="row">
+    {% for product in products %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" 
+                 style="height:200px; object-fit:cover;">
+            {% else %}
+            <img src="https://via.placeholder.com/300x200?text=No+Image" class="card-img-top" alt="No Image"
+                 style="height:200px; object-fit:cover;">
+            {% endif %}
+            
+            <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <p class="card-text card-text-short">{{ product.description|default:"Pas de description" }}</p>
+                <a href="{% url 'product_detail' product.id %}" class="btn btn-sm btn-link p-0">Voir tout</a>
+                <p class="card-text text-danger"><strong>Prix:</strong> {{ product.price }} DT</p>
+                <p class="card-text">
+                    <strong>Quantité:</strong>
+                    <span class="badge bg-info text-dark p-2 fs-6">{{ product.quantity }}</span>
+                </p>
+            </div>
+            
+            <div class="card-footer d-flex justify-content-between">
+                <a href="{% url 'product_edit' product.id %}" class="btn btn-sm btn-primary">Modifier</a>
+                <a href="{% url 'product_delete' product.id %}" class="btn btn-sm btn-danger"
+                   onclick="return confirm('Supprimer ce produit ?');">Supprimer</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p>Aucun produit disponible.</p>
+    {% endfor %}
+</div>
 {% endblock %}

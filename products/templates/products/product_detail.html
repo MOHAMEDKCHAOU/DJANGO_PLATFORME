@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+<div class="card mb-4" style="max-width: 600px; margin:auto;">
+    {% if product.image %}
+    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" 
+         style="height: 250px; object-fit: cover;">
+    {% else %}
+    <img src="https://via.placeholder.com/600x250?text=No+Image" class="card-img-top" alt="No Image"
+         style="height: 250px; object-fit: cover;">
+    {% endif %}
+
+    <div class="card-body">
+        <h3 class="card-title">{{ product.name }}</h3>
+        <p class="card-text">{{ product.description|default:"Pas de description" }}</p>
+
+        <!-- Prix en rouge clair -->
+        <p><strong>Prix:</strong> <span class="text-danger">{{ product.price }} DT</span></p>
+
+        <!-- Quantité avec badge -->
+        <p>
+            <strong>Quantité:</strong> 
+            <span class="badge bg-info text-dark p-2 fs-6">{{ product.quantity }}</span>
+        </p>
+
+        <a href="{% url 'product_edit' product.id %}" class="btn btn-primary me-2">Modifier</a>
+        <a href="{% url 'product_delete' product.id %}" class="btn btn-danger"
+           onclick="return confirm('Supprimer ce produit ?');">Supprimer</a>
+    </div>
+</div>
+{% endblock %}

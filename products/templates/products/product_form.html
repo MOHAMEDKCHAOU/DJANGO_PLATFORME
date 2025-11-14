@@ -1,18 +1,37 @@
 {% extends "base.html" %}
+{% load widget_tweaks %}
 {% block title %}Produit{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">Formulaire Produit</h2>
+<div class="container mt-4">
+    <h2 class="mb-4 text-center">Formulaire Produit</h2>
 
-<div class="card p-4 shadow-sm">
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
+    <div class="card shadow-sm p-4 mx-auto" style="max-width: 600px;">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
 
-        {{ form.as_p }}
+            {% for field in form %}
+                <div class="mb-3">
+                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                    {{ field|add_class:"form-control" }}
+                    {% if field.help_text %}
+                        <div class="form-text">{{ field.help_text }}</div>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
 
-        <button type="submit" class="btn btn-success">Enregistrer</button>
-        <a href="{% url 'product_list' %}" class="btn btn-secondary">Retour</a>
-    </form>
+            <div class="d-flex justify-content-between mt-4">
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-check-circle"></i> Enregistrer
+                </button>
+                <a href="{% url 'product_list' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left-circle"></i> Retour
+                </a>
+            </div>
+        </form>
+    </div>
 </div>
-
 {% endblock %}
