@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Dashboard Stock Manager</h2>
+
+<!-- 🔴 Alertes stock faible -->
+{% if low_stock_count > 0 %}
+<div class="alert alert-danger">
+    ⚠️ {{ low_stock_count }} produit(s) ont un stock faible :
+    <ul>
+        {% for p in low_stock_products %}
+        <li>{{ p.name }} ({{ p.quantity }} restant)</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<!-- 📊 Cards statistiques -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Total Produits</h5>
+                <p class="card-text fs-3">{{ total_products }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Stock Faible</h5>
+                <p class="card-text fs-3">{{ low_stock_count }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Valeur totale stock</h5>
+                <p class="card-text fs-3">{{ total_stock_value }} DT</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr>
+
+<!-- 📊 Graphiques Chart.js -->
+<h4>Produits par catégorie</h4>
+<canvas id="categoryChart" height="100"></canvas>
+
+<h4>Produits les plus vendus</h4>
+<canvas id="topSellingChart" height="100"></canvas>
+
+<h4>Historique entrées/sorties par mois</h4>
+<canvas id="monthlyChart" height="100"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// --- Graphique Catégories ---
+const ctxCategory = document.getElementById('categoryChart').getContext('2d');
+new Chart(ctxCategory, {
+    type: 'pie',
+    data: {
+        labels: [{% for c in categories %}'{{ c.category }}',{% endfor %}],
+        datasets: [{
+            data: [{% for c in categories %}{{ c.total_qty }},{% endfor %}],
+            backgroundColor: ['#007bff','#28a745','#ffc107','#dc3545','#6f42c1']
+        }]
+    }
+});
+
+// --- Graphique Top Produits vendus ---
+const ctxTop = document.getElementById('topSellingChart').getContext('2d');
+new Chart(ctxTop, {
+    type: 'bar',
+    data: {
+        labels: [{% for p in top_selling %}'{{ p.product__name }}',{% endfor %}],
+        datasets: [{
+            label: 'Quantité vendue',
+            data: [{% for p in top_selling %}{{ p.total_sold }},{% endfor %}],
+            backgroundColor: 'rgba(255, 99, 132, 0.6)'
+        }]
+    },
+    options: { responsive: true }
+});
+
+// --- Graphique historique mensuel ---
+const months = [];
+const inData = [];
+const outData = [];
+{% for m in monthly_movements %}
+months.push('{{ m.month|date:"M" }}');
+if ('{{ m.movement_type }}' == 'IN') {
+    inData.push({{ m.total }});
+    outData.push(0);
+} else {
+    outData.push({{ m.total }});
+    inData.push(0);
+}
+{% endfor %}
+
+const ctxMonthly = document.getElementById('monthlyChart').getContext('2d');
+new Chart(ctxMonthly, {
+    type: 'line',
+    data: {
+        labels: months,
+        datasets: [
+            { label: 'Entrées', data: inData, borderColor: 'green', fill: false },
+            { label: 'Sorties', data: outData, borderColor: 'red', fill: false }
+        ]
+    },
+    options: { responsive: true }
+});
+</script>
+
+<hr>
+
+<!-- 📋 Produits critiques -->
+<h4>Produits critiques</h4>
+<table class="table table-bordered">
+    <tr>
+        <th>Nom</th><th>Quantité</th><th>Catégorie</th><th>Action</th>
+    </tr>
+    {% for p in low_stock_products %}
+    <tr>
+        <td>{{ p.name }}</td>
+        <td>{{ p.quantity }}</td>
+        <td>{{ p.category }}</td>
+        <td>
+            <a href="{% url 'product_edit' p.pk %}" class="btn btn-sm btn-success">Réapprovisionner</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

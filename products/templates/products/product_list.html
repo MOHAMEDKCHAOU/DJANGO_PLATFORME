@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Produits{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between mb-3">
+    <h2>Liste des produits</h2>
+    <a href="{% url 'product_add' %}" class="btn btn-primary">+ Ajouter un produit</a>
+</div>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Nom</th>
+            <th>Catégorie</th>
+            <th>Prix</th>
+            <th>Quantité</th>
+            <th width="180px">Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for p in products %}
+        <tr>
+            <td>{{ p.name }}</td>
+            <td>{{ p.category }}</td>
+            <td>{{ p.price }} DT</td>
+            <td>{{ p.quantity }}</td>
+            <td>
+                <a href="{% url 'product_edit' p.pk %}" class="btn btn-warning btn-sm">Modifier</a>
+                <a href="{% url 'product_delete' p.pk %}" class="btn btn-danger btn-sm">Supprimer</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5" class="text-center">Aucun produit trouvé</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
