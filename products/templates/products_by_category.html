@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Products - {{ category.category }}{% endblock %}
+
+{% block content %}
+
+<div class="container pt-5">
+    <h2 class="text-center mb-4">{{ category.category }} Products</h2>
+
+    {% if products %}
+    <div class="row">
+        {% for product in products %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                {% else %}
+                    <img src="{% static 'img/no-image.jpg' %}" class="card-img-top" alt="No image">
+                {% endif %}
+
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p>{{ product.description|default:"No description" }}</p>
+                    <p><strong>Price:</strong> {{ product.price }} dt</p>
+                </div>
+
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+        <p class="text-center">No products in this category yet.</p>
+    {% endif %}
+
+</div>
+
+{% endblock %}

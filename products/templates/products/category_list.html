@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Categories{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid pt-5">
+    <div class="container">
+        <div class="section-title text-center mb-5">
+            <h4 class="text-primary text-uppercase" style="letter-spacing: 5px;">Our Categories</h4>
+            <h1 class="display-4">Choose Your Favorite</h1>
+        </div>
+
+        <div class="row">
+            {% for cat in categories %}
+            <div class="col-lg-6 mb-5">
+                <div class="row align-items-center">
+
+                    <!-- IMAGE based on category name -->
+                    <div class="col-sm-5">
+                        <img class="img-fluid mb-3 mb-sm-0"
+                             src="
+                                {% if cat.category == 'Coffee' %}
+                                    {% static 'img/categories/coffee.jpg' %}
+                                {% elif cat.category == 'Tees' %}
+                                    {% static 'img/categories/tea.jpg' %}
+                                {% elif cat.category == 'Frappuccino' %}
+                                    {% static 'img/categories/frappuccino.jpg' %}
+                                {% elif cat.category == 'Cold Drinks' %}
+                                    {% static 'img/categories/cold-drinks.jpg' %}
+                                {% elif cat.category == 'Cocktails' %}
+                                    {% static 'img/categories/cocktails.jpg' %}
+                                {% elif cat.category == 'Glace' %}
+                                    {% static 'img/categories/icecream.jpg' %}
+                                {% elif cat.category == 'Special Drinks' %}
+                                    {% static 'img/categories/special.jpg' %}
+                                {% elif cat.category == 'Food & Snacks' %}
+                                    {% static 'img/categories/food.jpg' %}
+                                {% elif cat.category == 'Promotions & Boxes' %}
+                                    {% static 'img/categories/box.jpg' %}
+                                {% elif cat.category == 'Vegan Options' %}
+                                    {% static 'img/categories/vegan.jpg' %}
+                                {% elif cat.category == 'Kids Menu' %}
+                                    {% static 'img/categories/kids.jpg' %}
+                                {% else %}
+                                    {% static 'img/category-default.jpg' %}
+                                {% endif %}
+                             "
+                             alt="{{ cat.category }}">
+                    </div>
+
+                    <!-- CATEGORY INFO -->
+                    <div class="col-sm-7">
+                        <h4><i class="fa fa-tag service-icon"></i> {{ cat.category }}</h4>
+                        <p class="m-0">Click to view all products in this category.</p>
+
+                        <a href="{% url 'products_by_category' cat.id %}"
+                           class="btn btn-primary mt-2">
+                            View Products
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

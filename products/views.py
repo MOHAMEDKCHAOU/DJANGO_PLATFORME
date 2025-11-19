@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Sum, F
-from .models import Product,StockMovement, Category
+from .models import Product, Review,StockMovement, Category
 from .forms import ProductForm, CategoryForm
 from django.shortcuts import render
 from django.core.mail import send_mail
@@ -196,3 +196,45 @@ def generate_qrcode(product):
     img.save(buffer)
     filename = f"qrcode_{product.id}.png"
     product.qrcode.save(filename, File(buffer), save=True)
+    
+    
+def about(request):
+    return render(request, 'products/about.html')
+
+def service(request):
+    return render(request, 'products/service.html')
+
+def menu(request):
+    return render(request, 'products/menu.html')
+
+def reservation(request):
+    return render(request, 'products/reservation.html')
+
+def testimonial(request):
+    return render(request, 'products/testimonial.html')
+
+def contact(request):
+    return render(request, 'products/contact.html')
+
+
+def products_by_category(request, category_id):
+    category = get_object_or_404(Category, id=category_id)
+    products = Product.objects.filter(category=category)
+    return render(request, "products_by_category.html", {
+        "category": category,
+        "products": products
+    })
+    
+
+def find_us(request):
+    reviews = Review.objects.all().order_by('-created_at')
+    return render(request, 'find_us.html', {'reviews': reviews})
+
+def add_review(request):
+    if request.method == "POST":
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        message = request.POST.get('message')
+        if name and email and message:
+            Review.objects.create(name=name, email=email, message=message)
+        return redirect('find_us')

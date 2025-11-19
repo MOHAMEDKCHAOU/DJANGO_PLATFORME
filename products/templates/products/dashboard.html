@@ -19,27 +19,25 @@
 <!-- 📊 Cards statistiques -->
 <div class="row mb-4">
     <div class="col-md-4">
-        <div class="card text-white bg-primary mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Total Produits</h5>
+        <div class="card text-white bg-primary mb-3 shadow-sm">
+            <div class="card-body text-center">
+                <h6 class="card-title">Total Produits</h6>
                 <p class="card-text fs-3">{{ total_products }}</p>
             </div>
         </div>
     </div>
-
     <div class="col-md-4">
-        <div class="card text-white bg-warning mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Stock Faible</h5>
+        <div class="card text-white bg-warning mb-3 shadow-sm">
+            <div class="card-body text-center">
+                <h6 class="card-title">Stock Faible</h6>
                 <p class="card-text fs-3">{{ low_stock_count }}</p>
             </div>
         </div>
     </div>
-
     <div class="col-md-4">
-        <div class="card text-white bg-success mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Valeur totale stock</h5>
+        <div class="card text-white bg-success mb-3 shadow-sm">
+            <div class="card-body text-center">
+                <h6 class="card-title">Valeur totale stock</h6>
                 <p class="card-text fs-3">{{ total_stock_value }} DT</p>
             </div>
         </div>
@@ -49,31 +47,49 @@
 <hr>
 
 <!-- 📊 Graphiques Chart.js -->
-<h4>Produits par catégorie</h4>
-<canvas id="categoryChart" height="100"></canvas>
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <h6 class="mb-2">Produits par catégorie</h6>
+        <canvas id="categoryChart" height="250"></canvas>
+    </div>
+    <div class="col-md-6 mb-4">
+        <h6 class="mb-2">Produits les plus vendus</h6>
+        <canvas id="topSellingChart" height="250"></canvas>
+    </div>
+</div>
 
-<h4>Produits les plus vendus</h4>
-<canvas id="topSellingChart" height="100"></canvas>
-
-<h4>Historique entrées/sorties par mois</h4>
-<canvas id="monthlyChart" height="100"></canvas>
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <h6 class="mb-2">Historique entrées/sorties par mois</h6>
+        <canvas id="monthlyChart" height="150"></canvas>
+    </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-// --- Graphique Catégories ---
+/* --- Graphique Catégories --- */
 const ctxCategory = document.getElementById('categoryChart').getContext('2d');
 new Chart(ctxCategory, {
-    type: 'pie',
+    type: 'doughnut',
     data: {
         labels: [{% for c in categories %}'{{ c.category }}',{% endfor %}],
         datasets: [{
             data: [{% for c in categories %}{{ c.total_qty }},{% endfor %}],
-            backgroundColor: ['#007bff','#28a745','#ffc107','#dc3545','#6f42c1']
+            backgroundColor: ['#007bff','#28a745','#ffc107','#dc3545','#6f42c1','#17a2b8'],
+            borderColor: '#fff',
+            borderWidth: 1
         }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'bottom' },
+            tooltip: { callbacks: { label: function(context) { return context.label + ': ' + context.raw + ' produits'; } } }
+        }
     }
 });
 
-// --- Graphique Top Produits vendus ---
+/* --- Graphique Top Produits vendus --- */
 const ctxTop = document.getElementById('topSellingChart').getContext('2d');
 new Chart(ctxTop, {
     type: 'bar',
@@ -82,25 +98,26 @@ new Chart(ctxTop, {
         datasets: [{
             label: 'Quantité vendue',
             data: [{% for p in top_selling %}{{ p.total_sold }},{% endfor %}],
-            backgroundColor: 'rgba(255, 99, 132, 0.6)'
+            backgroundColor: 'rgba(54, 162, 235, 0.7)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
         }]
     },
-    options: { responsive: true }
+    options: {
+        responsive: true,
+        plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
+        scales: { y: { beginAtZero: true } }
+    }
 });
 
-// --- Graphique historique mensuel ---
+/* --- Graphique historique mensuel --- */
 const months = [];
 const inData = [];
 const outData = [];
 {% for m in monthly_movements %}
 months.push('{{ m.month|date:"M" }}');
-if ('{{ m.movement_type }}' == 'IN') {
-    inData.push({{ m.total }});
-    outData.push(0);
-} else {
-    outData.push({{ m.total }});
-    inData.push(0);
-}
+if ('{{ m.movement_type }}' == 'IN') { inData.push({{ m.total }}); outData.push(0); } 
+else { outData.push({{ m.total }}); inData.push(0); }
 {% endfor %}
 
 const ctxMonthly = document.getElementById('monthlyChart').getContext('2d');
@@ -109,32 +126,39 @@ new Chart(ctxMonthly, {
     data: {
         labels: months,
         datasets: [
-            { label: 'Entrées', data: inData, borderColor: 'green', fill: false },
-            { label: 'Sorties', data: outData, borderColor: 'red', fill: false }
+            { label: 'Entrées', data: inData, borderColor: '#28a745', backgroundColor: 'rgba(40, 167, 69, 0.2)', fill: true, tension: 0.4 },
+            { label: 'Sorties', data: outData, borderColor: '#dc3545', backgroundColor: 'rgba(220, 53, 69, 0.2)', fill: true, tension: 0.4 }
         ]
     },
-    options: { responsive: true }
+    options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom' } },
+        scales: { y: { beginAtZero: true } }
+    }
 });
 </script>
 
 <hr>
 
 <!-- 📋 Produits critiques -->
-<h4>Produits critiques</h4>
-<table class="table table-bordered">
-    <tr>
-        <th>Nom</th><th>Quantité</th><th>Catégorie</th><th>Action</th>
-    </tr>
-    {% for p in low_stock_products %}
-    <tr>
-        <td>{{ p.name }}</td>
-        <td>{{ p.quantity }}</td>
-        <td>{{ p.category }}</td>
-        <td>
-            <a href="{% url 'product_edit' p.pk %}" class="btn btn-sm btn-success">Réapprovisionner</a>
-        </td>
-    </tr>
-    {% endfor %}
+<h6>Produits critiques</h6>
+<table class="table table-sm table-bordered table-hover">
+    <thead class="table-light">
+        <tr>
+            <th>Nom</th><th>Quantité</th><th>Catégorie</th><th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for p in low_stock_products %}
+        <tr>
+            <td>{{ p.name }}</td>
+            <td>{{ p.quantity }}</td>
+            <td>{{ p.category }}</td>
+            <td>
+                <a href="{% url 'product_edit' p.pk %}" class="btn btn-sm btn-success">Réapprovisionner</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
-
 {% endblock %}
