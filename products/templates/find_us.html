@@ -31,42 +31,81 @@
             <p><strong>Email:</strong> contact@mycafe.com</p>
         </div>
     </div>
+  <!-- Add Review Form Styled Like Testimonial -->
+<div class="container-fluid py-5">
+    <div class="container">
+        <h3 class="text-center mb-4">Add a Review</h3>
+        <div class="card shadow-sm p-4">
+            <form action="{% url 'add_review' %}" method="POST" enctype="multipart/form-data" class="row g-3 align-items-end">
+                {% csrf_token %}
+                
+                <!-- Name -->
+                <div class="col-md-3">
+                    <label class="form-label">Your Name</label>
+                    <input type="text" name="name" class="form-control" placeholder="Your Name" required>
+                </div>
 
-    <!-- Add Review Form -->
-    <div class="mb-5">
-        <h3 class="text-center mb-3">Add a Review</h3>
-        <form action="{% url 'add_review' %}" method="POST" class="row g-3">
-            {% csrf_token %}
-            <div class="col-md-4">
-                <input type="text" name="name" class="form-control" placeholder="Your Name" required>
-            </div>
-            <div class="col-md-4">
-                <input type="email" name="email" class="form-control" placeholder="Your Email" required>
-            </div>
-            <div class="col-md-4">
-                <textarea name="message" class="form-control" placeholder="Your Review" required></textarea>
-            </div>
-            <div class="col-12 text-center">
-                <button type="submit" class="btn btn-primary">Submit Review</button>
-            </div>
-        </form>
-    </div>
+                <!-- Email -->
+                <div class="col-md-3">
+                    <label class="form-label">Your Email</label>
+                    <input type="email" name="email" class="form-control" placeholder="Your Email" required>
+                </div>
 
-    <!-- Reviews List -->
-    <div>
-        <h3 class="text-center mb-4">Customer Reviews</h3>
-        {% for review in reviews %}
-        <div class="card mb-3">
-            <div class="card-body">
-                <h5 class="card-title">{{ review.name }}</h5>
-                <h6 class="card-subtitle mb-2 text-muted">{{ review.created_at|date:"M d, Y H:i" }}</h6>
-                <p class="card-text">{{ review.message }}</p>
-            </div>
+                <!-- Message -->
+                <div class="col-md-3">
+                    <label class="form-label">Your Review</label>
+                    <textarea name="message" class="form-control" placeholder="Your Review" rows="3" required></textarea>
+                </div>
+
+                <!-- Image -->
+                <div class="col-md-3">
+                    <label class="form-label">Your Photo (Optional)</label>
+                    <input type="file" name="image" class="form-control" accept="image/*">
+                    <small class="text-muted">Leave empty to use default image</small>
+                </div>
+
+                <!-- Submit -->
+                <div class="col-12 text-center mt-3">
+                    <button type="submit" class="btn btn-primary btn-lg">Submit Review</button>
+                </div>
+            </form>
         </div>
-        {% empty %}
-        <p class="text-center">No reviews yet.</p>
-        {% endfor %}
     </div>
 </div>
+  <!-- Testimonial Start -->
+<div class="container-fluid py-5">
+    <div class="container">
+        <div class="section-title text-center mb-5">
+            <h4 class="text-primary text-uppercase" style="letter-spacing: 5px;">Testimonial</h4>
+            <h1 class="display-4">Our Clients Say</h1>
+        </div>
+
+        <div class="owl-carousel testimonial-carousel">
+            {% for review in reviews %}
+            <div class="testimonial-item">
+                <div class="d-flex align-items-center mb-3">
+                    <!-- User image with default fallback -->
+                    <img class="img-fluid rounded-circle"
+                         src="{{ review.image.url }}"
+                         onerror="this.src='{% static 'img/Avis.jpg' %}'"
+                         alt="{{ review.name }}"
+                         style="width:70px; height:70px; object-fit:cover;">
+                    
+                    <div class="ml-3">
+                        <h4>{{ review.name }}</h4>
+                        <i>{{ review.created_at|date:"M d, Y" }}</i>
+                    </div>
+                </div>
+                <p class="m-0">{{ review.message }}</p>
+            </div>
+            {% empty %}
+            <p class="text-center">No reviews yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<!-- Testimonial End -->
+  
+
 
 {% endblock %}

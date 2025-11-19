@@ -198,8 +198,8 @@ def generate_qrcode(product):
     product.qrcode.save(filename, File(buffer), save=True)
     
     
-def about(request):
-    return render(request, 'products/about.html')
+def avis(request):
+    return render(request, '/avis.html')
 
 def service(request):
     return render(request, 'products/service.html')
@@ -235,6 +235,14 @@ def add_review(request):
         name = request.POST.get('name')
         email = request.POST.get('email')
         message = request.POST.get('message')
+        image = request.FILES.get("image")  # get file if uploaded
+
         if name and email and message:
-            Review.objects.create(name=name, email=email, message=message)
+            review = Review.objects.create(
+                name=name,
+                email=email,
+                message=message,
+                image=image  # can be None, default will be used
+            )
+
         return redirect('find_us')

@@ -17,6 +17,7 @@ urlpatterns = [
     
     path('find-us/', views.find_us, name='find_us'),
     path('add-review/', views.add_review, name='add_review'),
+    path('avis/', views.add_review, name='Avis'),
     path('service/', views.service, name='service'),
     path('menu/', views.menu, name='menu'),
     path('reservation/', views.reservation, name='reservation'),

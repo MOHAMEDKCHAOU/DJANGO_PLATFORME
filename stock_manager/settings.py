@@ -142,3 +142,8 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'hamakch12@gmail.com'
 EMAIL_HOST_PASSWORD = 'Hamma1234..'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
