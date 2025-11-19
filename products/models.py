@@ -48,6 +48,12 @@ class Review(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField()
     message = models.TextField()
+    image = models.ImageField(
+        upload_to='reviews/', 
+        blank=True, 
+        null=True, 
+        default='reviews/Avis.jpg'  # Image par défaut si l'utilisateur ne met rien
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
