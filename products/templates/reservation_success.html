@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<!-- Success Section -->
+<div class="container-fluid py-5">
+    <div class="container text-center">
+
+        <div class="mb-4">
+            <h4 class="text-primary text-uppercase" style="letter-spacing: 5px;">
+                Reservation
+            </h4>
+            <h1 class="display-4">Thank You!</h1>
+        </div>
+
+        <!-- Success Icon -->
+        <div class="mb-4">
+            <img src="{% static 'img/reservation_succss.png' %}" 
+                 alt="Success" 
+                 style="width:120px;">
+        </div>
+
+        <p class="lead mb-4">
+            Your reservation has been successfully submitted.<br>
+            Our team will contact you soon to confirm your booking.
+        </p>
+
+        <a href="{% url 'home' %}" class="btn btn-primary px-4 py-2 mb-2">
+            Back to Home
+        </a>
+
+        <br>
+
+        <a href="{% url 'find_us' %}" class="text-primary" style="text-decoration:none;">
+            View Our Location
+        </a>
+    </div>
+</div>
+
+{% endblock %}

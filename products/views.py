@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Sum, F
-from .models import Product, Review,StockMovement, Category
+from .models import Product, Reservation, Review,StockMovement, Category
 from .forms import ProductForm, CategoryForm
 from django.shortcuts import render
 from django.core.mail import send_mail
@@ -246,3 +246,33 @@ def add_review(request):
             )
 
         return redirect('find_us')
+    
+def reserve_table(request):
+    persons = range(1, 13)  # For dropdown: 1 to 12 persons
+
+    if request.method == "POST":
+        name = request.POST.get("name")
+        email = request.POST.get("email")
+        phone = request.POST.get("phone")
+        date = request.POST.get("date")
+        time = request.POST.get("time")
+        people = request.POST.get("people")
+        message = request.POST.get("message")
+
+        reservation = Reservation.objects.create(
+            name=name,
+            email=email,
+            phone=phone,
+            date=date,
+            time=time,
+            people=people,
+            message=message,
+        )
+
+        return render(request, "reservation_success.html", {
+            "reservation": reservation
+        })
+
+    return render(request, "reserve_table.html", {
+        "persons": persons
+    })

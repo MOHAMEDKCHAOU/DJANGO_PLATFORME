@@ -23,4 +23,7 @@ urlpatterns = [
     path('reservation/', views.reservation, name='reservation'),
     path('testimonial/', views.testimonial, name='testimonial'),
     path('contact/', views.contact, name='contact'),
+    
+    path("reserve/", views.reserve_table, name="reserve_table"),
+
 ]
