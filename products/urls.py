@@ -25,5 +25,12 @@ urlpatterns = [
     path('contact/', views.contact, name='contact'),
     
     path("reserve/", views.reserve_table, name="reserve_table"),
+     # ORDER SYSTEM
+    path('order/', views.place_order, name='place_order'),
+    path('order/<int:order_id>/invoice/', views.order_invoice, name='order_invoice'),
+     # urls.py
+    path('order/<int:order_id>/pdf/', views.order_invoice_pdf, name='order_invoice_pdf')
+
+
 
 ]

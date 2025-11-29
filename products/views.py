@@ -1,7 +1,8 @@
+from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Sum, F
-from .models import Product, Reservation, Review,StockMovement, Category
-from .forms import ProductForm, CategoryForm
+from .models import Order, OrderItem, Product, Reservation, Review,StockMovement, Category
+from .forms import OrderForm, ProductForm, CategoryForm
 from django.shortcuts import render
 from django.core.mail import send_mail
 from django.utils.timezone import now
@@ -13,6 +14,7 @@ from django.template.loader import render_to_string
 from django.http import HttpResponse
 from xhtml2pdf import pisa
 import csv
+from xhtml2pdf import pisa
 import pandas as pd
 def product_list(request):
     products = Product.objects.all()
@@ -276,3 +278,75 @@ def reserve_table(request):
     return render(request, "reserve_table.html", {
         "persons": persons
     })
+    
+def place_order(request):
+    products = Product.objects.all()
+
+    if request.method == 'POST':
+        form = OrderForm(request.POST)
+        product_ids = request.POST.getlist('product')
+        quantities = request.POST.getlist('quantity')
+
+        if form.is_valid():
+            # Créer la commande
+            order = form.save(commit=False)
+            order.created_at = timezone.now()
+            order.save()
+
+            # Ajouter les items commandés
+            for pid in product_ids:
+                product = Product.objects.get(id=pid)
+                qty = int(request.POST.get(f'quantity_{pid}', 1))
+                OrderItem.objects.create(
+                    order=order,
+                    product=product,
+                    quantity=qty,
+                    price=product.price
+                )
+
+            return redirect('order_invoice', order_id=order.id)
+
+    else:
+        form = OrderForm()
+
+    return render(request, 'place_order.html', {
+        'form': form,
+        'products': products
+    })
+
+
+# -----------------------------
+# AFFICHER LA FACTURE DE LA COMMANDE
+# -----------------------------
+
+def order_invoice(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    order_items = order.items.all()  # tous les produits de la commande
+    total_price = sum(item.total_price for item in order_items)  # total calculé avec quantity*price
+
+    return render(request, 'order_invoice.html', {
+        'order': order,
+        'order_items': order_items,
+        'total_price': total_price
+    })
+    
+
+
+def order_invoice_pdf(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    order_items = order.items.all()
+    total_price = sum(item.total_price for item in order_items)
+
+    html = render_to_string('order_invoice_pdf.html', {
+        'order': order,
+        'order_items': order_items,
+        'total_price': total_price,
+    })
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'filename="Invoice_{order.id}.pdf"'
+    pisa_status = pisa.CreatePDF(html, dest=response)
+
+    if pisa_status.err:
+        return HttpResponse('Error generating PDF <pre>' + html + '</pre>')
+    return response

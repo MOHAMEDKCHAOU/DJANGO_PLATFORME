@@ -1,0 +1,64 @@
+
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}Order Coffee{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="text-center mb-4">Place Your Coffee Order</h1>
+    <form method="POST" class="row g-4">
+        {% csrf_token %}
+
+        <!-- Customer info -->
+        <div class="col-md-6">
+            {{ form.first_name.label_tag }}
+            {{ form.first_name }}
+        </div>
+        <div class="col-md-6">
+            {{ form.last_name.label_tag }}
+            {{ form.last_name }}
+        </div>
+        <div class="col-md-6">
+            {{ form.email.label_tag }}
+            {{ form.email }}
+        </div>
+        <div class="col-md-6">
+            {{ form.phone.label_tag }}
+            {{ form.phone }}
+        </div>
+        <div class="col-12">
+            {{ form.address.label_tag }}
+            {{ form.address }}
+        </div>
+
+        <h3 class="mt-4">Select Products : </h3>
+        <h1> </h1>
+        <div class="row">
+            {% for product in products %}
+            <div class="col-md-6 mb-6">
+                <div class="card h-100">
+                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height:82px; object-fit:contain;">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ product.name }}</h5>
+                        <p class="card-text">{{ product.price }} TND</p>
+                        <div class="mt-auto">
+                            <div class="form-check mb-2">
+                                <input type="checkbox" name="product" value="{{ product.id }}" class="form-check-input" id="product{{ product.id }}">
+                                <label class="form-check-label" for="product{{ product.id }}">Select</label>
+                            </div>
+                            <input type="number" name="qty_{{ product.id }}" min="1" value="1" class="form-control" placeholder="Quantity">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="col-12 text-center mt-4">
+            <button type="submit" class="btn btn-primary btn-lg">Place Order</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
